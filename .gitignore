@@ -1,0 +1,14 @@
+# Secrets
+.env
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# Vector DB / generated data
+data/processed/chroma_db/
+
+# Logs
+*.log

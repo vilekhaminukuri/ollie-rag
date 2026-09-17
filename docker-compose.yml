@@ -1,0 +1,44 @@
+#version: '3.8'
+
+services:
+  # --- FASTAPI BACKEND ENGINE ---
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: ollie_backend
+    ports:
+      - "8000:8000"
+    environment:
+      # Number of uvicorn worker processes; tune to available CPU cores
+      - WEB_CONCURRENCY=4
+    env_file:
+      - .env
+    volumes:
+      # Mount vector database path so data persists across container restarts
+      - ./data/processed/chroma_db:/app/data/processed/chroma_db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  # --- STREAMLIT UI FRONTEND ---
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+    container_name: ollie_frontend
+    ports:
+      - "8501:8501"
+    environment:
+      # Use internal Docker DNS name 'backend' to reach FastAPI container
+      - FASTAPI_URL=http://backend:8000/api/chat
+    env_file:
+      # Picks up OLLIE_API_KEY so it matches the value the backend expects
+      - .env
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped

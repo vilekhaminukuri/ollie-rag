@@ -1,0 +1,27 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Prevent Python from writing .pyc files and enable unbuffered logging for real-time output
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# Install lightweight system dependencies required by C-extensions (e.g., ChromaDB dependencies)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python packages
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy source code into container
+COPY . .
+
+EXPOSE 8000
+
+# Start FastAPI backend server. WEB_CONCURRENCY controls worker process count
+# (override per-deployment via env; defaults to 4). uvloop/httptools give the
+# async event loop and HTTP parsing a meaningful speed boost over the defaults.
+CMD ["sh", "-c", "uvicorn src.api:app --host 0.0.0.0 --port 8000 --workers ${WEB_CONCURRENCY:-4} --loop uvloop --http httptools"]
