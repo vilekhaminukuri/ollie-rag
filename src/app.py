@@ -128,7 +128,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Resolves backend URL dynamically
-raw_backend_url = os.getenv("BACKEND_URL", os.getenv("FASTAPI_URL", "http://127.0.0.1:8000"))
+raw_backend_url = os.getenv("BACKEND_URL", os.getenv("FASTAPI_URL", "http://127.0.0.1:8080"))
 if not raw_backend_url.endswith("/api/chat"):
     FASTAPI_URL = f"{raw_backend_url.rstrip('/')}/api/chat"
 else:

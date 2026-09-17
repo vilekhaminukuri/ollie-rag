@@ -69,7 +69,7 @@ which are injected into the prompt sent to Groq.
    ```
 
    This starts:
-   - `ollie_backend` — FastAPI RAG API on `http://localhost:8000`
+   - `ollie_backend` — FastAPI RAG API on `http://localhost:8080`
    - `ollie_frontend` — Streamlit chat UI on `http://localhost:8501`
 
 4. **Ingest the documents**
@@ -84,7 +84,7 @@ which are injected into the prompt sent to Groq.
 5. **Verify**
 
    ```bash
-   curl http://localhost:8000/health
+   curl http://localhost:8080/health
    ```
 
    Should return `"database_connected": true`. Then open `http://localhost:8501` and start
@@ -135,9 +135,9 @@ Response (non-streaming):
 
 ```bash
 pip install -r requirements.txt
-python -m src.ingest          # build the vector index
-uvicorn src.api:app --reload  # backend on :8000
-streamlit run src/app.py      # frontend on :8501
+python -m src.ingest                       # build the vector index
+uvicorn src.api:app --reload --port 8080   # backend on :8080
+streamlit run src/app.py                   # frontend on :8501
 ```
 
 ## Notes
