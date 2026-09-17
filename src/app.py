@@ -2,6 +2,9 @@ import os
 import json
 import streamlit as st
 import requests
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # 1. Clean Layout Setup
 st.set_page_config(
